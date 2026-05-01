@@ -149,13 +149,16 @@ def extract_cards(driver: webdriver.Chrome, source: str) -> List[JobPosting]:
 
 def build_driver(headless: bool = True) -> webdriver.Chrome:
     options = Options()
+    options.page_load_strategy = "eager"
     if headless:
         options.add_argument("--headless=new")
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--window-size=1400,2000")
     service = Service(ChromeDriverManager().install())
-    return webdriver.Chrome(service=service, options=options)
+    driver = webdriver.Chrome(service=service, options=options)
+    driver.set_page_load_timeout(30)
+    return driver
 
 
 def validate_urls(urls: List[str]) -> List[str]:
@@ -218,11 +221,14 @@ def main() -> None:
                     EC.presence_of_element_located((By.TAG_NAME, "body"))
                 )
             except TimeoutException:
-                print(f"[WARN] 로딩 시간 초과: {url}")
+                print(f"[WARN] 로딩 시간 초과로 건너뜀: {url}")
+                continue
+            except Exception as e:
+                print(f"[ERROR] 페이지 접속 실패로 건너뜀: {url} | {type(e).__name__}: {e}")
                 continue
 
             jobs = extract_cards(driver, source)
-            print(f"[INFO] {source}에서 {len(jobs)}건 추출")
+            print(f"[INFO] {source} 처리 완료 - {len(jobs)}건 추출")
             all_jobs.extend(jobs)
 
     finally:

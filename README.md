@@ -111,3 +111,17 @@ CSV 컬럼:
 - `scraper.py`: 수집 및 CSV 저장 메인 스크립트
 - `requirements.txt`: 필요한 Python 패키지
 - `output/`: 결과 CSV 저장 폴더 (실행 시 자동 생성)
+
+---
+
+## 7) 타임아웃 문제 해결 팁
+
+- 일부 검색 결과 URL은 네트워크/사이트 상태에 따라 로딩 타임아웃이 날 수 있습니다.
+- 현재 스크립트는 타임아웃 URL을 자동으로 건너뛰고 다음 URL을 계속 처리합니다.
+- 그래도 반복 실패하면 URL을 한 번에 여러 개 넣지 말고 **하나씩** 실행해 원인을 확인하세요.
+
+예시:
+
+```bash
+python scraper.py "https://www.saramin.co.kr/zf_user/search/recruit?searchword=마케팅"
+```
